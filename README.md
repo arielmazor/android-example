@@ -9,8 +9,8 @@ git clone --depth 1 https://github.com/arielmazor/android-example PROJECT_NAME
 1.  In your _**Project panel**_, click on the little gear icon ( ![Gears icon](https://i.stack.imgur.com/lkezT.png) )
     
 2.  Uncheck the `Compact Empty Middle Packages` option
-    
-    ![Compact Empty Middle Packages](https://i.imgur.com/3j5pzNa.png)
+
+    ![Compact Empty Middle Packages](https://user-images.githubusercontent.com/64742335/233628354-9cb01267-dd1d-4d71-8126-2cc3465961d7.png)
     
 3.  Your package directory will now be broken down into individual directories
     
