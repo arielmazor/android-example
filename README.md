@@ -9,3 +9,4 @@
 3. Replace for your [package name](https://support.google.com/admob/answer/9972781?hl=en)
 
 4. Click `Replace all`
+5. reaname `app/src/main/java/EXAMPLE/EXAMPLE/EXAMPLE` to your [package name](https://support.google.com/admob/answer/9972781?hl=en)
