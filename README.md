@@ -47,6 +47,7 @@ git clone --depth 1 https://github.com/arielmazor/android-example PROJECT_NAME
     ![Clean and Rebuild](https://i.stack.imgur.com/xBqWu.png)
 
 
-8 Add your [Google Service File](https://support.google.com/firebase/answer/7015592?hl=en#android&zippy=%2Cin-this-article) to /app
+8 Add your [Google Service File](https://support.google.com/firebase/answer/7015592?hl=en#android&zippy=%2Cin-this-article) to `/app`
 
-9.  _**Done!**_ now you can start to code withb ease!
+9. **Done!** now you can start to code withb ease!
+
