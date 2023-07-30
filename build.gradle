@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        compose_ui_version = '1.4.2'
+        compose_ui_version = '1.4.3'
         ext.kotlin_version = "1.8.20"
     }
     dependencies {

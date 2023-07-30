@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "254802263623",
+    "project_id": "next-tutor-53742",
+    "storage_bucket": "next-tutor-53742.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:254802263623:android:a833282b86c26eb8c97b62",
+        "android_client_info": {
+          "package_name": "io.nexttutor.android"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "254802263623-57a19ss2na3nfrgrkrrj25ilujdi31mm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBToP0iBizc-l8Q2UWdTVt9SAHepV0xIDo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "254802263623-57a19ss2na3nfrgrkrrj25ilujdi31mm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:254802263623:android:fe1e94cef07ab67cc97b62",
+        "android_client_info": {
+          "package_name": "io.nexttutor.gPicker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "254802263623-57a19ss2na3nfrgrkrrj25ilujdi31mm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBToP0iBizc-l8Q2UWdTVt9SAHepV0xIDo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "254802263623-57a19ss2na3nfrgrkrrj25ilujdi31mm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -3,7 +3,7 @@
 1. Clone the Repository:
 
 ```
-git clone --depth 1 https://github.com/arielmazor/android-example PROJECT_NAME
+git clone --depth 1 https://github.com/arielmazor/gPicker PROJECT_NAME
 ```
 
 2. Remove `.git` folder

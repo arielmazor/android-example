@@ -1,0 +1,24 @@
+{
+  "name": "gdrive",
+  "version": "1.0.0",
+  "main": "src/index.ts",
+  "repository": "git@github.com:arielmazor/gdrive1.git",
+  "author": "arielmazor <ariel.mazor.mail@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "start": "ts-node ."
+  },
+  "dependencies": {
+    "axios": "^1.2.1",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "googleapis": "^110.0.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.15",
+    "@types/node": "^18.11.18",
+    "nodemon": "^3.0.1",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.9.4"
+  }
+}
