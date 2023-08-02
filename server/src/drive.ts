@@ -24,20 +24,42 @@ export function drive(api: Application) {
       'Authorization': `Bearer ${access_token.data.access_token}`
     }
 
-    const options = {
+    const foldersQuery = {
       orderBy: "modifiedTime desc",
-      pageSize: 8,
-      q: "trashed = false and 'me' in owners and (mimeType = 'application/vnd.google-apps.folder' or  mimeType = 'application/vnd.google-apps.file' or  mimeType = 'application/vnd.google-apps.document')"
+      q: `trashed = false and 'me' in owners and ${folderMimeType}`
     }
 
-    const response = await axios.get(`https://www.googleapis.com/drive/v3/files?` + QueryString.stringify(options), { headers })
+    const filesQuery = {
+      orderBy: "modifiedTime desc",
+      pageSize: 8,
+      q: `trashed = false and 'me' in owners and (${pdfMimeType} or ${pngMimeType} or ${jpegMimeType} or ${wordMimeType} or ${docsMimeType} or ${slidesMimeType}`
+    }
+
+    const foldersRes = await axios.get(`https://www.googleapis.com/drive/v3/files?` + QueryString.stringify(foldersQuery), { headers })
 
     var files: IFile[] = [];
-    const thumbnail = await axios.get(`https://drive.google.com/thumbnail?sz=w640&id=1RGvW4qKK--hHRdI_P0KrGGAbuNPox6GW72x9YgyIITw`, { headers })
-    console.log(thumbnail.data)
-    if (response.data.files != null) {
-      await Promise.all(response.data.files.map(async (file: any) => {
-        const thumbnail = await getThumbnail(file.id, headers)
+
+    if (foldersRes.data.files != null) {
+      foldersRes.data.files.forEach((folder: any) => {
+        const _folder = {
+          name: folder.name,
+          id: folder.id,
+          thumbnail: "",
+          MIME: folder.mimeType
+        }
+
+        files.push(_folder)
+      });
+    }
+
+    const filesRes = await axios.get(`https://www.googleapis.com/drive/v3/files?` + QueryString.stringify(filesQuery), { headers })
+
+    if (filesRes.data.files != null) {
+      await Promise.all(filesRes.data.files.map(async (file: any) => {
+        var thumbnail = ""
+        if (file.mimeType.includes("image/")) {
+          thumbnail = await getThumbnail(file.id, headers)
+        }
         const _file = {
           name: file.name!,
           id: file.id!,
@@ -73,3 +95,11 @@ const getThumbnail = async (id: string, headers: any): Promise<string> => {
   const file = await axios.get(`https://www.googleapis.com/drive/v3/files/${id}?fields=thumbnailLink`, { headers })
   return file.data.thumbnailLink || "";
 }
+
+const folderMimeType = "mimeType = 'application/vnd.google-apps.folder'";
+const pdfMimeType = "mimeType = 'application/pdf'";
+const pngMimeType = "mimeType = 'image/png'";
+const jpegMimeType = "mimeType = 'image/jpeg'";
+const wordMimeType = "mimeType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'";
+const docsMimeType = "mimeType = 'application/vnd.google-apps.document'";
+const slidesMimeType = "mimeType = 'application/vnd.google-apps.presentation')";

@@ -3,25 +3,28 @@ package io.nexttutor.gPicker.files
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.nexttutor.gPicker.File
-import io.nexttutor.gPicker.Retrofit
+import com.google.api.services.drive.Drive
+import com.google.api.services.drive.model.File
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+
+const val query =
+    "trashed = false and 'me' in owners"
 
 class FilesModel : ViewModel() {
-    var files = MutableStateFlow<MutableList<File>?>(null)
+    val files = MutableStateFlow<MutableList<File>>(mutableListOf())
 
-    init {
-        viewModelScope.launch(Dispatchers.IO) {
-            val res =
-                Retrofit.api.getFiles("1//03yE7Pw2J-lRNCgYIARAAGAMSNwF-L9IrEZPJYNjImoTylDhgoUiARH694eflp3P29YKTe2VkD0ErCQ_4f7T8jI6YRHt-AnZMgkE")
 
-            withContext(Dispatchers.Main) {
-                Log.d("DEBUGGER_APP", res.body()!![0].thumbnail)
-                files.value = res.body()!!.toMutableList()
-            }
+    fun init(drive: Drive) {
+
+        viewModelScope.launch(Dispatchers.Default) {
+            val result = drive.Files().list().apply {
+                orderBy = "modifiedTime desc"
+                fields = "files(id, name, thumbnailLink)"
+                q = "trashed = false and 'me' in owners"
+            }.execute()
+            files.value = result.files
         }
     }
 

@@ -44,7 +44,16 @@ data class File(
     val MIME: String
 )
 
+@Serializable
+data class Token(
+    val accessToken: String,
+    val expirationTime: Long
+)
+
 interface Api {
     @GET("/files")
     suspend fun getFiles(@Query("refresh_token") refresh_token: String): Response<List<File>>
+
+    @GET("/access_token")
+    suspend fun getAccessToken(@Query("refresh_token") refresh_token: String): Response<Token>
 }
