@@ -1,99 +1,88 @@
 import axios from "axios";
 import { Application, Request, Response } from "express"
-import { OAuth2Client } from "google-auth-library";
-import { drive_v3, google } from "googleapis";
 import QueryString from "qs";
+
+interface IFolder {
+  id: string,
+  name: string
+}
 
 interface IFile {
   id: string,
   name: string,
   thumbnail: string,
-  MIME: string
+  mimeType: string
 }
 
 export function drive(api: Application) {
-  api.get("/files", [], async (req: Request, res: Response) => {
-    const access_token = await axios.post("https://www.googleapis.com/oauth2/v4/token", {
-      client_id: process.env.CLIENT_ID,
-      client_secret: process.env.CLIENT_SECRET,
-      refresh_token: req.query.refresh_token,
-      grant_type: "refresh_token"
-    })
-
-    const headers = {
-      'Authorization': `Bearer ${access_token.data.access_token}`
-    }
-
-    const foldersQuery = {
-      orderBy: "modifiedTime desc",
-      q: `trashed = false and 'me' in owners and ${folderMimeType}`
-    }
-
-    const filesQuery = {
-      orderBy: "modifiedTime desc",
-      pageSize: 8,
-      q: `trashed = false and 'me' in owners and (${pdfMimeType} or ${pngMimeType} or ${jpegMimeType} or ${wordMimeType} or ${docsMimeType} or ${slidesMimeType}`
-    }
-
-    const foldersRes = await axios.get(`https://www.googleapis.com/drive/v3/files?` + QueryString.stringify(foldersQuery), { headers })
-
-    var files: IFile[] = [];
-
-    if (foldersRes.data.files != null) {
-      foldersRes.data.files.forEach((folder: any) => {
-        const _folder = {
-          name: folder.name,
-          id: folder.id,
-          thumbnail: "",
-          MIME: folder.mimeType
-        }
-
-        files.push(_folder)
-      });
-    }
-
-    const filesRes = await axios.get(`https://www.googleapis.com/drive/v3/files?` + QueryString.stringify(filesQuery), { headers })
-
-    if (filesRes.data.files != null) {
-      await Promise.all(filesRes.data.files.map(async (file: any) => {
-        var thumbnail = ""
-        if (file.mimeType.includes("image/")) {
-          thumbnail = await getThumbnail(file.id, headers)
-        }
-        const _file = {
-          name: file.name!,
-          id: file.id!,
-          thumbnail,
-          MIME: file.mimeType!
-        }
-        files.push(_file)
-      }))
-    }
-
-    return res.status(200).json(files);
-  })
-
-  api.get("/thumbnail", [], async (req: Request, res: Response) => {
-    const access_token = await axios.post("https://www.googleapis.com/oauth2/v4/token", {
-      client_id: process.env.CLIENT_ID,
-      client_secret: process.env.CLIENT_SECRET,
-      refresh_token: req.query.refresh_token,
-      grant_type: "refresh_token"
-    })
-
-    const headers = {
-      'Authorization': `Bearer ${access_token.data.access_token}`
-    }
-
-    const response = await axios.get(`https://drive.google.com/thumbnail?sz=w640&id=${req.query.fileId}}`, { headers })
-
-    return res.status(200).json(response.data);
+  api.get("/drive/initial", [], async (req: Request, res: Response) => {
+    const headers = await authorize(req.query.refresh_token as string)
+    const folders = await getFolders(headers)
+    const files = await getFiles(headers, "")
+    res.status(200).json({
+      foldersNextPageToken: folders.nextPageToken,
+      folders: folders.folders,
+      filesNextPageToken: files.nextPageToken,
+      files: files.files
+    });
   })
 }
 
-const getThumbnail = async (id: string, headers: any): Promise<string> => {
-  const file = await axios.get(`https://www.googleapis.com/drive/v3/files/${id}?fields=thumbnailLink`, { headers })
-  return file.data.thumbnailLink || "";
+const getFolders = async (headers: any, pageToken?: string): Promise<{ folders: IFolder[], nextPageToken: any }> => {
+  const query: any = {
+    orderBy: "modifiedTime desc",
+    q: `trashed = false and 'me' in owners and ${folderMimeType}`,
+    fields: "nextPageToken, files(id, name)"
+  }
+
+  if (pageToken) {
+    query.pageToken = pageToken;
+  } else {
+    query.pageSize = 5;
+  }
+
+  const foldersRes = await axios.get(`https://www.googleapis.com/drive/v3/files?` + QueryString.stringify(query), { headers })
+
+  const folders: IFolder[] = foldersRes.data.files || [];
+  var nextPageToken = "";
+  if (folders.length === 5 && !pageToken) {
+    folders.pop();
+    nextPageToken = foldersRes.data.nextPageToken
+  }
+
+  return { folders, nextPageToken }
+}
+
+const getFiles = async (headers: any, pageToken?: string): Promise<{ files: IFile[], nextPageToken: any }> => {
+  const query: any = {
+    orderBy: "modifiedTime desc",
+    pageSize: 8,
+    q: `trashed = false and 'me' in owners and (${pdfMimeType} or ${pngMimeType} or ${jpegMimeType} or ${wordMimeType} or ${docsMimeType} or ${slidesMimeType}`,
+    fields: "nextPageToken, files(id, name, mimeType, thumbnailLink)"
+  }
+
+  if (pageToken) {
+    query.pageToken = pageToken;
+  }
+
+  const filesRes = await axios.get(`https://www.googleapis.com/drive/v3/files?` + QueryString.stringify(query), { headers })
+
+  const files: IFile[] = filesRes.data.files ? filesRes.data.files : []
+
+  return { files, nextPageToken: filesRes.data.nextPageToken }
+}
+
+const authorize = async (refresh_token: string): Promise<any> => {
+  const res = await axios.post("https://www.googleapis.com/oauth2/v4/token", {
+    client_id: process.env.CLIENT_ID,
+    client_secret: process.env.CLIENT_SECRET,
+    refresh_token: refresh_token,
+    grant_type: "refresh_token"
+  })
+
+  return {
+    'Authorization': `Bearer ${res.data.access_token}`
+  }
 }
 
 const folderMimeType = "mimeType = 'application/vnd.google-apps.folder'";

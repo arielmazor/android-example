@@ -28,7 +28,7 @@ object Retrofit {
             .build()
 
         Retrofit.Builder()
-            .baseUrl("https://3285-2a10-8012-11-6ca1-9d5c-6e92-a4c9-fa1b.ngrok-free.app")
+            .baseUrl("https://cd5f-2a10-8012-11-6ca1-cc8d-d883-b5c9-5d96.ngrok-free.app")
             .addConverterFactory(json.asConverterFactory(contentType))
             .client(client)
             .build()
@@ -37,11 +37,26 @@ object Retrofit {
 }
 
 @Serializable
+data class Folder(
+    val id: String,
+    val name: String,
+)
+
+
+@Serializable
 data class File(
     val id: String,
     val name: String,
-    val thumbnail: String,
-    val MIME: String
+    val thumbnailLink: String,
+    val mimeType: String
+)
+
+@Serializable
+data class Drive(
+    val foldersNextPageToken: String,
+    val folders: List<Folder>,
+    val filesNextPageToken: String,
+    val files: List<File>
 )
 
 @Serializable
@@ -51,8 +66,8 @@ data class Token(
 )
 
 interface Api {
-    @GET("/files")
-    suspend fun getFiles(@Query("refresh_token") refresh_token: String): Response<List<File>>
+    @GET("/drive/initial")
+    suspend fun getInitial(@Query("refresh_token") refresh_token: String): Response<Drive>
 
     @GET("/access_token")
     suspend fun getAccessToken(@Query("refresh_token") refresh_token: String): Response<Token>

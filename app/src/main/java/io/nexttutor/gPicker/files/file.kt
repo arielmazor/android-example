@@ -27,15 +27,16 @@ import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import io.nexttutor.gPicker.File
+import io.nexttutor.gPicker.Folder
 import io.nexttutor.gPicker.R
 import io.nexttutor.gPicker.poppins
 
 @Composable
-fun FileComponent(file: File) {
+fun FileComponent(file: File, onPress: (file: File) -> Unit) {
     val painter = when {
-        file.MIME.contains("pdf") -> painterResource(id = R.drawable.pdf)
-        file.MIME.contains("document") -> painterResource(id = R.drawable.docs)
-        file.MIME.contains("folder") -> painterResource(id = R.drawable.folder)
+        file.mimeType.contains("pdf") -> painterResource(id = R.drawable.pdf)
+        file.mimeType.contains("document") -> painterResource(id = R.drawable.docs)
+        file.mimeType.contains("folder") -> painterResource(id = R.drawable.folder)
         else -> painterResource(id = R.drawable.slides)
     }
 
@@ -51,10 +52,10 @@ fun FileComponent(file: File) {
                 .width(60.dp),
             contentAlignment = Alignment.Center
         ) {
-            if (file.thumbnail.isNotEmpty()) {
+            if (!file.thumbnailLink.contains("https://docs.google.com") && !file.mimeType.contains("pdf")) {
                 AsyncImage(
                     model = ImageRequest.Builder(LocalContext.current)
-                        .data(file.thumbnail)
+                        .data(file.thumbnailLink)
                         .crossfade(true)
                         .build(),
                     contentDescription = "Image",
@@ -78,6 +79,38 @@ fun FileComponent(file: File) {
         }
         Text(
             text = file.name,
+            fontSize = 17.sp,
+            fontFamily = poppins,
+            color = Color(0xff333333),
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.fillMaxWidth(0.8f),
+            maxLines = 1
+        )
+    }
+}
+
+@Composable
+fun FolderComponent(folder: Folder, onPress: (folder: Folder) -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(60.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxHeight()
+                .width(60.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Image(
+                painter = painterResource(R.drawable.folder),
+                contentDescription = "folder",
+                modifier = Modifier.size(25.dp),
+            )
+        }
+        Text(
+            text = folder.name,
             fontSize = 17.sp,
             fontFamily = poppins,
             color = Color(0xff333333),

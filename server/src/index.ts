@@ -23,7 +23,7 @@ app.get("/access_token", async (req, res: Response) => {
   const tokens = await axios.post("https://www.googleapis.com/oauth2/v4/token", {
     client_id: process.env.CLIENT_ID,
     client_secret: process.env.CLIENT_SECRET,
-    refresh_token: "1//03yE7Pw2J-lRNCgYIARAAGAMSNwF-L9IrEZPJYNjImoTylDhgoUiARH694eflp3P29YKTe2VkD0ErCQ_4f7T8jI6YRHt-AnZMgkE",
+    refresh_token: "1//04bkxcKc-vYP5CgYIARAAGAQSNwF-L9IrMsJgxtGtEWsdUQXwF7UyFo_iajtNWRPArbd3MFNAsceErHu6xviFhUPqXZwVxEc0T5k",
     grant_type: "refresh_token"
   })
 
