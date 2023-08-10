@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun BottomTab(isSelectable: Boolean) {
+fun BottomTab() {
     Row(
         modifier = Modifier
             .fillMaxSize()
@@ -33,7 +33,7 @@ fun BottomTab(isSelectable: Boolean) {
             text = "Select",
             fontSize = 18.sp,
             fontFamily = poppins,
-            color = Color(if (isSelectable) 0xff1f6b88 else 0xff91989e),
+            color = Color(if (Store.selectedFilesIds.isNotEmpty()) 0xff1f6b88 else 0xff91989e),
             modifier = Modifier.padding(end = 30.dp)
         )
     }

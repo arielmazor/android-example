@@ -1,31 +1,80 @@
 package io.nexttutor.gPicker
 
 import android.util.Log
-import android.widget.Toast
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.withContext
 
 const val REFRESH_TOKEN =
-    "1//04bkxcKc-vYP5CgYIARAAGAQSNwF-L9IrMsJgxtGtEWsdUQXwF7UyFo_iajtNWRPArbd3MFNAsceErHu6xviFhUPqXZwVxEc0T5k"
+    "1//04mdPNGR8XtMUCgYIARAAGAQSNwF-L9IrMzFQ6S9WvoUKsD6sa-1d04KSieVlN2Ut5Jg1KrF6E3BobKXI44KxI8pJN_Ve0vIZ7lc"
 
 
 class DriveService {
     companion object {
-        var foldersNextPageToken: String? = null
-        var folders = MutableStateFlow<List<Folder>>(mutableListOf())
-        var filesNextPageToken: String? = null
-        var files = MutableStateFlow<List<File>>(mutableListOf())
+        var nextPageToken: String? = null
+        var orderBy by mutableStateOf(OrderBy.ModifiedTime)
+            private set
+        var files = MutableStateFlow<List<File>>(emptyList())
     }
 
-    suspend fun init() {
-        try {
-            val res = Retrofit.api.getInitial(REFRESH_TOKEN).body()!!
-            foldersNextPageToken = res.foldersNextPageToken
-            folders.value = res.folders
-            filesNextPageToken = res.filesNextPageToken
-            files.value = res.files
-        } catch (err: Exception) {
-            Log.e("DEBUGGER_APP", err.toString())
+    suspend fun setFolder(folder: File? = null) {
+        withContext(Dispatchers.IO) {
+            try {
+                files.value = mutableListOf()
+                val res =
+                    Retrofit.api.setFolder(
+                        REFRESH_TOKEN,
+                        orderBy,
+                        folder?.id ?: "",
+                        nextPageToken ?: ""
+                    )
+                        .body()!!
+
+                nextPageToken = res.nextPageToken
+                files.value = res.files
+
+            } catch (err: Exception) {
+                Log.d("DEBUGGER_APP", err.toString())
+            }
+        }
+    }
+
+    suspend fun changeOrder(_orderBy: OrderBy, folder: File? = null) {
+        withContext(Dispatchers.IO) {
+            try {
+                orderBy = _orderBy
+                nextPageToken = ""
+                files.value = mutableListOf()
+                val res =
+                    Retrofit.api.setFolder(
+                        REFRESH_TOKEN,
+                        _orderBy,
+                        folder?.id ?: "",
+                    ).body()!!
+
+                nextPageToken = res.nextPageToken
+                files.value = res.files
+
+            } catch (err: Exception) {
+                Log.d("DEBUGGER_APP", err.toString())
+            }
+        }
+    }
+
+    suspend fun loadMore() {
+        withContext(Dispatchers.IO) {
+            try {
+                val res =
+                    Retrofit.api.loadMore(REFRESH_TOKEN, orderBy, nextPageToken ?: "").body()!!
+
+                nextPageToken = res.nextPageToken
+                files.value += res.files
+            } catch (err: Exception) {
+                Log.d("DEBUGGER_APP", err.toString())
+            }
         }
     }
 }
