@@ -1,5 +1,6 @@
 package io.nexttutor.gPicker.files
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -12,6 +13,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,6 +40,8 @@ fun Files(openSheet: () -> Unit) {
     val listState = rememberLazyListState(initialFirstVisibleItemIndex = currIndex)
 
     fun loadMore(index: Int) {
+        Log.d("DEBUGGER_APP", "hello")
+
         scope.launch {
             isLoadingMore = true
             DriveService().loadMore()
@@ -51,6 +55,7 @@ fun Files(openSheet: () -> Unit) {
     fun openFolder(folder: File) {
         scope.launch {
             Store.selectedFolders.add(folder)
+            DriveService.nextPageToken = ""
             DriveService().setFolder(folder)
         }
     }
@@ -68,16 +73,17 @@ fun Files(openSheet: () -> Unit) {
                 FormatHeader(openSheet)
             }
             itemsIndexed(items = files.value) { index, file ->
+                LaunchedEffect(key1 = null) {
+                    if (files.value.lastIndex == index && !isLoadingMore && DriveService.nextPageToken?.isNotEmpty() == true) {
+                         loadMore(index)
+                    }
+                }
                 if (file.mimeType.contains("folder")) {
                     FolderComponent(file, ::openFolder)
 
                 } else {
-
                     FileComponent(
-                        file,
-                        if (files.value.lastIndex == index && !isLoadingMore && DriveService.nextPageToken?.isNotEmpty() == true) {
-                            { loadMore(index) }
-                        } else null
+                        file
                     )
                 }
             }

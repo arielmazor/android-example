@@ -31,7 +31,7 @@ object Retrofit {
             .build()
 
         Retrofit.Builder()
-            .baseUrl("https://b368-2a10-8012-11-6ca1-4582-c1dc-b766-2646.ngrok-free.app")
+            .baseUrl("https://27f0-2a10-8012-5-52b3-e1b6-8a15-329b-74d2.ngrok-free.app")
             .addConverterFactory(json.asConverterFactory(contentType))
             .addConverterFactory(EnumConverterFactory())
             .client(client)

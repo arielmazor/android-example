@@ -23,6 +23,7 @@ export function drive(api: Application) {
   api.get("/drive/folder", [], async (req: Request, res: Response) => {
     try {
       const { refreshToken, pageToken, folderId, orderBy } = getQueryParams(req.query)
+      console.log(JSON.stringify(getQueryParams(req.query), null, 2))
       const headers = await authorize(refreshToken);
       const files = await getFolder(headers, orderBy, pageToken, folderId);
 

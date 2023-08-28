@@ -32,7 +32,7 @@ fun Header() {
     fun goBack() {
         scope.launch {
             Store.selectedFolders.removeLast()
-
+            DriveService.nextPageToken = ""
             DriveService().setFolder(Store.selectedFolders.last())
         }
     }

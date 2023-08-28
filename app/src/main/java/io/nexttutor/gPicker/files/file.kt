@@ -17,7 +17,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -41,7 +40,7 @@ import io.nexttutor.icons
 import io.nexttutor.noRippleClickable
 
 @Composable
-fun FileComponent(file: File, loadMore: (() -> Unit)?) {
+fun FileComponent(file: File) {
     val isSelected = remember(Store.selectedFilesIds) {
         Store.selectedFilesIds.find { file.id == it } != null
     }
@@ -70,10 +69,6 @@ fun FileComponent(file: File, loadMore: (() -> Unit)?) {
         } else {
             Store.selectedFilesIds += file.id
         }
-    }
-
-    LaunchedEffect(key1 = null) {
-        loadMore?.invoke()
     }
 
     Row(
